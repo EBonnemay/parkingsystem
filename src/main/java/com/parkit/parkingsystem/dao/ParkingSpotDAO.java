@@ -16,16 +16,21 @@ public class ParkingSpotDAO {
 
     public DataBaseConfig dataBaseConfig = new DataBaseConfig();
 
+
+
     public int getNextAvailableSlot(ParkingType parkingType){
         Connection con = null;
         int result=-1;
         try {
             con = dataBaseConfig.getConnection();
             PreparedStatement ps = con.prepareStatement(DBConstants.GET_NEXT_PARKING_SPOT);
-            ps.setString(1, parkingType.toString());
-            ResultSet rs = ps.executeQuery();
+            //"select min(PARKING_NUMBER) from parking where AVAILABLE = true and TYPE = ?"
+            ps.setString(1, parkingType.toString());//remplace ? par VELO (je crois) dans le statement.
+            //la requete est completee
+
+            ResultSet rs = ps.executeQuery();//exécute la requete > place les données dans la DB
             if(rs.next()){
-                result = rs.getInt(1);;
+                result = rs.getInt(1);
             }
             dataBaseConfig.closeResultSet(rs);
             dataBaseConfig.closePreparedStatement(ps);
@@ -34,7 +39,7 @@ public class ParkingSpotDAO {
         }finally {
             dataBaseConfig.closeConnection(con);
         }
-        return result;
+        return result;//indique son numéro de parking au client entrant
     }
 
     public boolean updateParking(ParkingSpot parkingSpot){

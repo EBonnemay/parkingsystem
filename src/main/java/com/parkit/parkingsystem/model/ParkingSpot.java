@@ -7,6 +7,7 @@ public class ParkingSpot {
     private ParkingType parkingType;
     private boolean isAvailable;
 
+    //constructeur passe les paramètres en attributs
     public ParkingSpot(int number, ParkingType parkingType, boolean isAvailable) {
         this.number = number;
         this.parkingType = parkingType;
