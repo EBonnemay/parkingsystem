@@ -6,9 +6,14 @@ import com.parkit.parkingsystem.dao.TicketDAO;
 import com.parkit.parkingsystem.model.ParkingSpot;
 import com.parkit.parkingsystem.model.Ticket;
 import com.parkit.parkingsystem.util.InputReaderUtil;
+//ajout
+import com.parkit.parkingsystem.service.DateForParkingApp;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.inject.Inject;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class ParkingService {
@@ -20,11 +25,14 @@ public class ParkingService {
     private InputReaderUtil inputReaderUtil;
     private ParkingSpotDAO parkingSpotDAO;
     private  TicketDAO ticketDAO;
+    //ajout
+    private DateForParkingApp dateForParkingApp ;
 
-    public ParkingService(InputReaderUtil inputReaderUtil, ParkingSpotDAO parkingSpotDAO, TicketDAO ticketDAO){
+    public ParkingService(InputReaderUtil inputReaderUtil, ParkingSpotDAO parkingSpotDAO, TicketDAO ticketDAO, DateForParkingApp dateForParkingApp){
         this.inputReaderUtil = inputReaderUtil;
         this.parkingSpotDAO = parkingSpotDAO;
         this.ticketDAO = ticketDAO;
+        this.dateForParkingApp = dateForParkingApp;
     }
 
     public void processIncomingVehicle() {
@@ -35,7 +43,16 @@ public class ParkingService {
                 parkingSpot.setAvailable(false);
                 parkingSpotDAO.updateParking(parkingSpot);//allot this parking space and mark its availability as false
 
-                Date inTime = new Date();
+                Date inTime = new Date();//when no parameter, cur date...
+                //System.out.println(inTime1);
+               // DateFormat defaultFormat = new SimpleDateFormat("EEE,MMM dd HH:mm:ss z yyyy");
+                //DateFormat DBFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+                //String inTimeString = defaultFormat.format(inTime1);
+                //Date inTime = DBFormat.parse(inTimeString);
+
+
+
+                System.out.println("inTime has just been set at " + inTime);
                 Ticket ticket = new Ticket();
                 //ID, PARKING_NUMBER, VEHICLE_REG_NUMBER, PRICE, IN_TIME, OUT_TIME)
                 //ticket.setId(ticketID);
@@ -100,14 +117,20 @@ public class ParkingService {
     public void processExitingVehicle() {
         try{
             String vehicleRegNumber = getVehichleRegNumber();
-            Ticket ticket = ticketDAO.getTicket(vehicleRegNumber);
-            Date outTime = new Date();
-            ticket.setOutTime(outTime);
-            fareCalculatorService.calculateFare(ticket);
-            if(ticketDAO.updateTicket(ticket)) {
-                ParkingSpot parkingSpot = ticket.getParkingSpot();
-                parkingSpot.setAvailable(true);
-                parkingSpotDAO.updateParking(parkingSpot);
+            Ticket ticket = ticketDAO.getTicket(vehicleRegNumber); //récupère objet ticket corr à immatriculation dans la TABLE TICKET
+            //COMMENT MODIFIER UNE VARIABLE SANS
+            //ajout ICI il y avait un new dateForParkingApp, nouvel objet différent du mock ATTENTION ATTENTION
+            Date outTime = dateForParkingApp.getDateForParkingApp();
+
+            //enlevé
+            //Date outTime = new Date();  // DATE ACTUELLE
+
+            ticket.setOutTime(outTime); //complète les informations du ticket
+            fareCalculatorService.calculateFare(ticket); // calcule le prix à partir des données du ticket
+            if(ticketDAO.updateTicket(ticket)) { //place les données objet ticket DANS TABLE TICKET et renvoie oui ou non
+                ParkingSpot parkingSpot = ticket.getParkingSpot(); //récupère objet parkingSpot dans objet ticket
+                parkingSpot.setAvailable(true); //modifie available de ce parkingSpot à True
+                parkingSpotDAO.updateParking(parkingSpot); //PLACE LES INFOS DE L4OBJET parking spot DANS LA BASE DE DONNEE PARKING
                 System.out.println("Please pay the parking fare:" + ticket.getPrice());
                 System.out.println("Recorded out-time for vehicle number:" + ticket.getVehicleRegNumber() + " is:" + outTime);
             }else{

@@ -18,7 +18,8 @@ public class InteractiveShell {
         InputReaderUtil inputReaderUtil = new InputReaderUtil();
         ParkingSpotDAO parkingSpotDAO = new ParkingSpotDAO();
         TicketDAO ticketDAO = new TicketDAO();
-        ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+        DateForParkingApp dateForParkingApp = new DateForParkingApp();
+        ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO, dateForParkingApp);
 
         while(continueApp){
             loadMenu();

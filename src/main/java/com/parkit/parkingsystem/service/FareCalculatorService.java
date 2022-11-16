@@ -14,24 +14,25 @@ public class FareCalculatorService {
             throw new IllegalArgumentException("Out time provided is incorrect:"+ticket.getOutTime().toString());
         }
         //ajout Emma
-        Date inHourDate = ticket.getInTime();
-        DateTime inHour = new DateTime(inHourDate);
+        Date inHour = ticket.getInTime();
+        DateTime inHourJo = new DateTime(inHour);
 
         //retrait Emma
         //int inHour = ticket.getInTime().getHours();
         //ajout print Emma
-        System.out.println("inHour = " + inHour);
+        System.out.println("inHourJoda = " + inHourJo);
         //ajout Emma
-        Date outHourDate = ticket.getOutTime();
-        DateTime outHour = new DateTime(outHourDate);
+        Date outHour = ticket.getOutTime();
+        DateTime outHourJo = new DateTime(outHour);
         //retrait Emma
         //int outHour = ticket.getOutTime().getHours();
         //ajout print Emma
-        System.out.println("outHour = " + outHour);
+        System.out.println("outHourJava =" + outHour);
+        System.out.println("outHourJoda = " + outHourJo);
         //TODO: Some tests are failing here. Need to check if this logic is correct
         //ôté par Emma
         //int  duration = outHour - inHour;
-        Duration durationInMillisec = new Duration (inHour, outHour);
+        Duration durationInMillisec = new Duration (inHourJo, outHourJo);
         long duration = durationInMillisec.getStandardMinutes();
         System.out.println("duration = "+ duration);
 
