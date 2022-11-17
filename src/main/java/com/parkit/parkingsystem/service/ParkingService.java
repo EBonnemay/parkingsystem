@@ -43,7 +43,8 @@ public class ParkingService {
                 parkingSpot.setAvailable(false);
                 parkingSpotDAO.updateParking(parkingSpot);//allot this parking space and mark its availability as false
 
-                Date inTime = new Date();//when no parameter, cur date...
+                Date inTime = dateForParkingApp.getDateForParkingApp();
+                //Date inTime = new Date();//when no parameter, cur date...
                 //System.out.println(inTime1);
                // DateFormat defaultFormat = new SimpleDateFormat("EEE,MMM dd HH:mm:ss z yyyy");
                 //DateFormat DBFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
@@ -117,8 +118,9 @@ public class ParkingService {
     public void processExitingVehicle() {
         try{
             String vehicleRegNumber = getVehichleRegNumber();
+           // LIGNE CI-DESSOUS PROBLEME : IL RECUPERE LE PREMIER NUMERO DE TICKET CORR A IMMATRICULATION
             Ticket ticket = ticketDAO.getTicket(vehicleRegNumber); //récupère objet ticket corr à immatriculation dans la TABLE TICKET
-            //COMMENT MODIFIER UNE VARIABLE SANS
+
             //ajout ICI il y avait un new dateForParkingApp, nouvel objet différent du mock ATTENTION ATTENTION
             Date outTime = dateForParkingApp.getDateForParkingApp();
 

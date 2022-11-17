@@ -4,16 +4,14 @@ import com.google.protobuf.GeneratedMessage;
 import com.parkit.parkingsystem.dao.ParkingSpotDAO;
 import com.parkit.parkingsystem.dao.TicketDAO;
 import com.parkit.parkingsystem.integration.config.DataBaseTestConfig;
+import com.parkit.parkingsystem.integration.service.CalculateFareForCarTest;
 import com.parkit.parkingsystem.integration.service.DataBasePrepareService;
 import com.parkit.parkingsystem.model.ParkingSpot;
 import com.parkit.parkingsystem.model.Ticket;
 import com.parkit.parkingsystem.service.DateForParkingApp;
 import com.parkit.parkingsystem.service.ParkingService;
 import com.parkit.parkingsystem.util.InputReaderUtil;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -25,6 +23,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -152,7 +151,7 @@ public class ParkingDataBaseIT {
         System.out.println("here is date objext 'outTimeTest' = "+ outTimeTest);
 */
 
-        Date dateTimeTest = new Date(2022-1900, 11-1, 16, 22, 30, 00);
+        Date dateTimeTest = new Date(2022-1900, 11-1, 17, 22, 30, 00);
         Timestamp outTimeTest = new Timestamp(dateTimeTest.getTime());
 
         //doReturn(dateTimeTest).when(dateForParkingApp).getDateForParkingApp();
@@ -182,5 +181,29 @@ public class ParkingDataBaseIT {
 
 
     }
+    @Test
+    public void testCorrectFareInDB () throws Exception {
+        Date dateTimeTestIn = new Date(2022-1900, 11-1, 18, 6, 30, 0);
+        when(dateForParkingApp.getDateForParkingApp()).thenReturn(dateTimeTestIn);
+        //Timestamp outTimeTestIn = new Timestamp(dateTimeTestIn.getTime());
+        testParkingACar();
+        Date dateTimeTestOut = new Date(2022-1900, 11-1, 18, 8, 30, 0);
+        //Timestamp outTimeTestOut = new Timestamp(dateTimeTestOut.getTime());
+        when(dateForParkingApp.getDateForParkingApp()).thenReturn(dateTimeTestOut);
+        CalculateFareForCarTest calculateFareForCarTest = new CalculateFareForCarTest();
+        Double expectedFare = calculateFareForCarTest.calculFareCarMethod(dateTimeTestIn, dateTimeTestOut);
+        ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO, dateForParkingApp);
+        parkingService.processExitingVehicle();
+        String encodedRegistration = inputReaderUtil.readVehicleRegistrationNumber();
+        //Ticket ticket = ticketDAO.getTicket(encodedRegistration); // On rehydate l'objet ticket avec la valeur de la DB
+        //double actualFareFoundDB = ticket.getPrice();
+
+        //System.out.println("my outTime in String is = "+outTimeTestString.substring(0,19));
+        //System.out.println("my DB time Out in String is = "+ getOutTimeTicketDAOString.substring(0,19));
+
+        assertEquals(Optional.of(expectedFare), Optional.of(ticketDAO.getTicket(encodedRegistration).getPrice()));
+
+    }
+
 
 }
