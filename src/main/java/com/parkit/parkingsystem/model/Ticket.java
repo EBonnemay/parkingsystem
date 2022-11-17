@@ -11,6 +11,15 @@ public class Ticket {
     private Date inTime;
     private Date outTime;
 
+    private Boolean recurrent = new Boolean("false");
+    public void setRecurrent(boolean bool){
+        this.recurrent = bool;
+    }
+
+    public Boolean getRecurrent() {
+        return recurrent;
+    }
+
     public int getId() {
         return id;
     }

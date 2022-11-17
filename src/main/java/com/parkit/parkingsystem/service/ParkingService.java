@@ -55,6 +55,7 @@ public class ParkingService {
 
                 System.out.println("inTime has just been set at " + inTime);
                 Ticket ticket = new Ticket();
+                //if (ticket.getRecurrent())
                 //ID, PARKING_NUMBER, VEHICLE_REG_NUMBER, PRICE, IN_TIME, OUT_TIME)
                 //ticket.setId(ticketID);
                 ticket.setParkingSpot(parkingSpot);
@@ -62,6 +63,12 @@ public class ParkingService {
                 ticket.setPrice(0);
                 ticket.setInTime(inTime);
                 ticket.setOutTime(null);
+
+                if(ticketDAO.getTicket(vehicleRegNumber)==null){
+                    //considère le client comme NON RECURRENT
+                }
+
+
                 ticketDAO.saveTicket(ticket);
                 System.out.println("Generated Ticket and saved in DB");
                 System.out.println("Please park your vehicle in spot number:"+parkingSpot.getId());
@@ -120,15 +127,17 @@ public class ParkingService {
             String vehicleRegNumber = getVehichleRegNumber();
            // LIGNE CI-DESSOUS PROBLEME : IL RECUPERE LE PREMIER NUMERO DE TICKET CORR A IMMATRICULATION
             Ticket ticket = ticketDAO.getTicket(vehicleRegNumber); //récupère objet ticket corr à immatriculation dans la TABLE TICKET
-
+            int number_of_tickets = ticketDAO.getNumberOfTickets(vehicleRegNumber);
             //ajout ICI il y avait un new dateForParkingApp, nouvel objet différent du mock ATTENTION ATTENTION
             Date outTime = dateForParkingApp.getDateForParkingApp();
 
             //enlevé
             //Date outTime = new Date();  // DATE ACTUELLE
 
-            ticket.setOutTime(outTime); //complète les informations du ticket
-            fareCalculatorService.calculateFare(ticket); // calcule le prix à partir des données du ticket
+            ticket.setOutTime(outTime); //complète les informations du ticket:: null POinter exception
+
+            fareCalculatorService.calculateFare(ticket, number_of_tickets); // calcule le prix à partir des données du ticket
+            ticket.setRecurrent(true);
             if(ticketDAO.updateTicket(ticket)) { //place les données objet ticket DANS TABLE TICKET et renvoie oui ou non
                 ParkingSpot parkingSpot = ticket.getParkingSpot(); //récupère objet parkingSpot dans objet ticket
                 parkingSpot.setAvailable(true); //modifie available de ce parkingSpot à True

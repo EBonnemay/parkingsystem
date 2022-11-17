@@ -9,7 +9,7 @@ import org.joda.time.Duration;
 
 public class FareCalculatorService {
 
-    public void calculateFare(Ticket ticket){
+    public void calculateFare(Ticket ticket, int number_of_tickets){
         if( (ticket.getOutTime() == null) || (ticket.getOutTime().before(ticket.getInTime())) ){
             throw new IllegalArgumentException("Out time provided is incorrect:"+ticket.getOutTime().toString());
         }
@@ -35,14 +35,17 @@ public class FareCalculatorService {
         Duration durationInMillisec = new Duration (inHourJo, outHourJo);
         long duration = durationInMillisec.getStandardMinutes();
         System.out.println("duration = "+ duration);
-
+        if(duration>30) {
+            duration = duration - 30;
+        }
+        double discount = number_of_tickets>1 ? 5 : 0;
         switch (ticket.getParkingSpot().getParkingType()){
             case CAR: {
-                ticket.setPrice(duration * Fare.CAR_RATE_PER_HOUR/60);
+                ticket.setPrice(duration * Fare.CAR_RATE_PER_HOUR/60 * ((100-discount)/100));
                 break;
             }
             case BIKE: {
-                ticket.setPrice(duration * Fare.BIKE_RATE_PER_HOUR/60);
+                ticket.setPrice(duration * Fare.BIKE_RATE_PER_HOUR/60 * ((100-discount)/100));
                 break;
             }
             default: throw new IllegalArgumentException("Unkown Parking Type");
