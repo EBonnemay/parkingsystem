@@ -4,7 +4,6 @@ import com.google.protobuf.GeneratedMessage;
 import com.parkit.parkingsystem.dao.ParkingSpotDAO;
 import com.parkit.parkingsystem.dao.TicketDAO;
 import com.parkit.parkingsystem.integration.config.DataBaseTestConfig;
-import com.parkit.parkingsystem.integration.service.CalculateFareForCarTest;
 import com.parkit.parkingsystem.integration.service.DataBasePrepareService;
 import com.parkit.parkingsystem.model.ParkingSpot;
 import com.parkit.parkingsystem.model.Ticket;
@@ -21,6 +20,7 @@ import javax.inject.Inject;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Optional;
@@ -42,7 +42,7 @@ public class ParkingDataBaseIT {
     private static TicketDAO ticketDAO; //déclaration d'un ticketDAT :alloue un espace pr une DB ticket
     private static DataBasePrepareService dataBasePrepareService; //déclaration d'un objet DataBaseprepareService : alloue 1 espace pr 1 DBPS
 
-   // private static Ticket ticket; // alloue 1 espace pr 1 copie de Ticket
+    // private static Ticket ticket; // alloue 1 espace pr 1 copie de Ticket
 
     @InjectMocks
     private static ParkingService parkingService;
@@ -52,10 +52,10 @@ public class ParkingDataBaseIT {
     //???no access modifier
 
     @Mock
-    private static DateForParkingApp dateForParkingApp;
+    private static DateForParkingApp dateForParkingApp;//le mock désactive la classe. on est censé faire un when pour ttes les méthodes invoquées qui appartiennent à cette classe
 
-    @BeforeAll //avant de lancer les tests de la classe,  exécuter ceci :
-    private static void setUp() throws Exception{
+    @BeforeAll //avant de lancer les tests de la classe,  exécuter ceci une fois pour toutes :
+    private static void setUp() throws Exception {
         parkingSpotDAO = new ParkingSpotDAO(); //instancier une nouvelle table parking
         parkingSpotDAO.dataBaseConfig = dataBaseTestConfig; //parkingspotDAT a un objet DBCOnfig en attribut.
         ticketDAO = new TicketDAO(); //instancier une nouvelle table tickets.
@@ -75,13 +75,16 @@ public class ParkingDataBaseIT {
     }
 
     @AfterAll
-    private static void tearDown(){ //Après tous les tests exécute "tear down"(??)
+    private static void tearDown() { //Après tous les tests exécute "tear down"(??)
 
     }
 
     @Test
     public void testParkingACar() throws Exception {
-
+        //Date dateTimeTest = new Date(2022 - 1900, 11 - 1, 17, 8, 30, 00);
+        Date date = new Date();
+        //when(dateForParkingApp.getDateForParkingApp()).thenReturn(dateTimeTest);
+        when(dateForParkingApp.getDateForParkingApp()).thenReturn(date);
         //Ticket ticket = new Ticket();
         ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO, dateForParkingApp);
         //instancier un objet parkingService à partir de trois variables :
@@ -103,10 +106,9 @@ public class ParkingDataBaseIT {
         //TODO: check that a ticket is actually saved in DB and Parking table is updated with availability
         // dans table ticket : parking number, numéro du véhicule, heure d'arrivée sont dans la DB
         //String vehicleNumber = ticket.getVehicleRegNumber();
-        //System.out.println(vehicleNumber); >> pourquoi cette ligne donne-t-elle "null"??
+
         //Ticket ticketInDB = ticketDAO.getTicket(inputReaderUtil.readVehicleRegistrationNumber());
         //TERMINE
-
 
 
         //VERIFICATION
@@ -129,7 +131,8 @@ public class ParkingDataBaseIT {
         //méthode 2 :
         System.out.println("parkingSpotDAO.updateParking(parkSpot) is" + parkingSpotDAO.updateParking(parkSpot));
         assertEquals(parkingSpotDAO.updateParking(parkSpot), true);
-        System.out.println("Time In in DB = "+ ticket.getInTime());
+        //UN TEST OU DEUX TESTS?
+        System.out.println("Time In in DB = " + ticket.getInTime());
 
     }
 
@@ -137,59 +140,44 @@ public class ParkingDataBaseIT {
     //ajout de throws dans une méthode de test...
     public void testParkingLotExit() throws Exception {
         testParkingACar();
-
-        // getting the system date Wed Nov 16 17:21:38 CET 2022
-/*c'est ce bloc qui fuot le bordel > réinstanciation de dateForParking alors que mock est déjà passé dessus.
-        dateForParkingApp = new DateForParkingApp(2022, 11, 16, 22, 30, 00); >> ATTENTION ICI NEW
-        Date dateTimeTest = dateForParkingApp.getDateForParkingApp();
-        // getting the object of the Timestamp class
-        Timestamp outTimeTest = new Timestamp(dateTimeTest.getTime());
-
-        // printing the timestamp of the current date
-        System.out.println("here is timestamp object ts = "+ outTimeTest);
-
-        System.out.println("here is date objext 'outTimeTest' = "+ outTimeTest);
-*/
-
-        Date dateTimeTest = new Date(2022-1900, 11-1, 17, 22, 30, 00);
-        Timestamp outTimeTest = new Timestamp(dateTimeTest.getTime());
-
-        //doReturn(dateTimeTest).when(dateForParkingApp).getDateForParkingApp();
+        System.out.println(ticketDAO.getTicket("FEDCBA").getOutTime());
+        System.out.println(ticketDAO.getTicket("FEDCBA").getPrice());
+        Date dateTimeTest = new Date(2022 - 1900, 12 - 1, 19, 22, 30, 00);
         when(dateForParkingApp.getDateForParkingApp()).thenReturn(dateTimeTest);
 
-        // when(dateForParkingApp.getDateForParkingApp() ).thenReturn(dateTimeTest);
-       // System.out.println("mockito order given");
         ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO, dateForParkingApp); //parce que je vais avoir besoin d'un
         //nouvel outil de communication avec la DB sur base de mes variables de classe déf ci dessus (inputRU, PSDAO, TDAO)
+
         parkingService.processExitingVehicle();
-        //Ticket ticket = new Ticket();
-        // quand je crée un objet Ticket ici >> reassigned local variable(?)
-        //quand je n'en crée pas, ma DB est vide et l'outTest est null FAUX
+
         String encodedRegistration = inputReaderUtil.readVehicleRegistrationNumber();
         Ticket ticket = ticketDAO.getTicket(encodedRegistration); // On rehydate l'objet ticket avec la valeur de la DB
-        // notons que getTicket crée un ticket
+
         //TODO: check that the fare generated and out time are populated (remplis) correctly in the database
         Date getOutTimeTicketDAO = ticket.getOutTime();
-       String outTimeTestString = outTimeTest.toString();
-       String getOutTimeTicketDAOString = getOutTimeTicketDAO.toString();
+        Double price = ticket.getPrice();
 
-        System.out.println("outTimeTest in DB = "+ ticket.getOutTime());
-        //assertThat(ticket.getOutTime()).as("out date for %s vehicle number", inputReaderUtil.readVehicleRegistrationNumber()).isEqualTo(outTimeTest);
-        System.out.println("my outTime in String is = "+outTimeTestString.substring(0,19));
-        System.out.println("my DB time Out in String is = "+ getOutTimeTicketDAOString.substring(0,19));
-        assertEquals(outTimeTestString.substring(0,19), getOutTimeTicketDAOString.substring(0,19));
-
-
+        //assertThat(ticket.getOutTime().isNotNull());
+        System.out.println(price);
+        //assertThat(price);
+        assertThat(getOutTimeTicketDAO);
     }
-    @Test
-    public void testCorrectFareInDB () throws Exception {
-        Date dateTimeTestIn = new Date(2022-1900, 11-1, 18, 6, 30, 0);
+
+    /*@Test
+    public void testCorrectFareInDB() throws Exception {//test correct fare OU correct fare in DB?
+        Date dateTimeTestIn = new Date(2022 - 1900, Calendar.DECEMBER, 30, 6, 30, 0);
         when(dateForParkingApp.getDateForParkingApp()).thenReturn(dateTimeTestIn);
         //Timestamp outTimeTestIn = new Timestamp(dateTimeTestIn.getTime());
         testParkingACar();
-        Date dateTimeTestOut = new Date(2022-1900, 11-1, 18, 8, 30, 0);
+        Date dateTimeTestOut = new Date(2022 - 1900, Calendar.DECEMBER, 30, 6, 59, 0);
         //Timestamp outTimeTestOut = new Timestamp(dateTimeTestOut.getTime());
         when(dateForParkingApp.getDateForParkingApp()).thenReturn(dateTimeTestOut);
+
+
+        //à revoir, la méthode ci-dessous n'est pas adaptée
+        // aux vélos
+        //aux 5%
+        //aux 30 mn
         CalculateFareForCarTest calculateFareForCarTest = new CalculateFareForCarTest();
         Double expectedFare = calculateFareForCarTest.calculFareCarMethod(dateTimeTestIn, dateTimeTestOut);
         ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO, dateForParkingApp);
@@ -198,12 +186,20 @@ public class ParkingDataBaseIT {
         //Ticket ticket = ticketDAO.getTicket(encodedRegistration); // On rehydate l'objet ticket avec la valeur de la DB
         //double actualFareFoundDB = ticket.getPrice();
 
-        //System.out.println("my outTime in String is = "+outTimeTestString.substring(0,19));
-        //System.out.println("my DB time Out in String is = "+ getOutTimeTicketDAOString.substring(0,19));
 
         assertEquals(Optional.of(expectedFare), Optional.of(ticketDAO.getTicket(encodedRegistration).getPrice()));
 
     }
+    //
+    //STORY N°1 - utilisateur qui reste moins de 30 minutes
+    //à tester = fare calculator service(ticket, num of tickets)
+    //mocker : ticket.getIntime, ticket.getOutTime?? ou ticketDAO.ticket
+    //est ce vraiment nécessaire vu que ce sont des paramètres?
+
+    //STORY N°2
+    //>> mocker : ticketDAO.getNumberOfTickets(vehicleRegNumber) pour imposer le nombre de tickets >1
 
 
+    //nombre de ticket
+*/
 }

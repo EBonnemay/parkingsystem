@@ -9,46 +9,48 @@ import org.joda.time.Duration;
 
 public class FareCalculatorService {
 
-    public void calculateFare(Ticket ticket, int number_of_tickets){
-        if( (ticket.getOutTime() == null) || (ticket.getOutTime().before(ticket.getInTime())) ){
-            throw new IllegalArgumentException("Out time provided is incorrect:"+ticket.getOutTime().toString());
+    public void calculateFare(Ticket ticket, int number_of_tickets) {
+        if ((ticket.getOutTime() == null) || (ticket.getOutTime().before(ticket.getInTime()))) {
+            System.out.println("zut");
+            throw new IllegalArgumentException("Out time provided is incorrect:" + ticket.getOutTime().toString());
         }
-        //ajout Emma
+
         Date inHour = ticket.getInTime();
         DateTime inHourJo = new DateTime(inHour);
 
-        //retrait Emma
-        //int inHour = ticket.getInTime().getHours();
-        //ajout print Emma
-        System.out.println("inHourJoda = " + inHourJo);
-        //ajout Emma
+
         Date outHour = ticket.getOutTime();
         DateTime outHourJo = new DateTime(outHour);
-        //retrait Emma
-        //int outHour = ticket.getOutTime().getHours();
-        //ajout print Emma
-        System.out.println("outHourJava =" + outHour);
-        System.out.println("outHourJoda = " + outHourJo);
-        //TODO: Some tests are failing here. Need to check if this logic is correct
-        //ôté par Emma
-        //int  duration = outHour - inHour;
-        Duration durationInMillisec = new Duration (inHourJo, outHourJo);
+
+
+        //TODO: Some tests are failing here. LESQUELS? Need to check if this logic is correct
+
+        Duration durationInMillisec = new Duration(inHourJo, outHourJo);
         long duration = durationInMillisec.getStandardMinutes();
-        System.out.println("duration = "+ duration);
-        if(duration>30) {
-            duration = duration - 30;
-        }
-        double discount = number_of_tickets>1 ? 5 : 0;
-        switch (ticket.getParkingSpot().getParkingType()){
-            case CAR: {
-                ticket.setPrice(duration * Fare.CAR_RATE_PER_HOUR/60 * ((100-discount)/100));
-                break;
+        System.out.println("duration = " + duration);
+        if (duration < 30) {
+            System.out.println("Vous êtes resté moins de 30 minutes, c'est gratuit");
+            ticket.setPrice(0);
+
+        } else {
+            double discount = number_of_tickets > 1 ? 5 : 0;
+            if (discount == 5) {
+                System.out.println("5% appliqué sur le prix");
             }
-            case BIKE: {
-                ticket.setPrice(duration * Fare.BIKE_RATE_PER_HOUR/60 * ((100-discount)/100));
-                break;
+
+            switch (ticket.getParkingSpot().getParkingType()) {
+                case CAR: {
+                    ticket.setPrice((duration * Fare.CAR_RATE_PER_HOUR / 60) * (100 - discount) / 100);
+                    break;
+                }
+                case BIKE: {
+                    ticket.setPrice((duration * Fare.BIKE_RATE_PER_HOUR / 60) * (100 - discount) / 100);
+                    break;
+                }
+                default:
+                    throw new IllegalArgumentException("Unkown Parking Type");
             }
-            default: throw new IllegalArgumentException("Unkown Parking Type");
+
         }
     }
 }

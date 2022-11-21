@@ -40,22 +40,18 @@ public class ParkingService {
             ParkingSpot parkingSpot = getNextParkingNumberIfAvailable();
             if(parkingSpot !=null && parkingSpot.getId() > 0){
                 String vehicleRegNumber = getVehichleRegNumber();
+                if(ticketDAO.getTicket(vehicleRegNumber)!=null){
+                    System.out.println("Welcome back! As a recurring user of our parking lot, you'll benefit from a 5% discount.");
+                }
                 parkingSpot.setAvailable(false);
                 parkingSpotDAO.updateParking(parkingSpot);//allot this parking space and mark its availability as false
 
                 Date inTime = dateForParkingApp.getDateForParkingApp();
-                //Date inTime = new Date();//when no parameter, cur date...
-                //System.out.println(inTime1);
-               // DateFormat defaultFormat = new SimpleDateFormat("EEE,MMM dd HH:mm:ss z yyyy");
-                //DateFormat DBFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-                //String inTimeString = defaultFormat.format(inTime1);
-                //Date inTime = DBFormat.parse(inTimeString);
-
-
+                System.out.println("my date from class DFPA is = " + inTime);
 
                 System.out.println("inTime has just been set at " + inTime);
                 Ticket ticket = new Ticket();
-                //if (ticket.getRecurrent())
+                System.out.println("ticket created");
                 //ID, PARKING_NUMBER, VEHICLE_REG_NUMBER, PRICE, IN_TIME, OUT_TIME)
                 //ticket.setId(ticketID);
                 ticket.setParkingSpot(parkingSpot);
@@ -63,10 +59,6 @@ public class ParkingService {
                 ticket.setPrice(0);
                 ticket.setInTime(inTime);
                 ticket.setOutTime(null);
-
-                if(ticketDAO.getTicket(vehicleRegNumber)==null){
-                    //considère le client comme NON RECURRENT
-                }
 
 
                 ticketDAO.saveTicket(ticket);
@@ -125,19 +117,17 @@ public class ParkingService {
     public void processExitingVehicle() {
         try{
             String vehicleRegNumber = getVehichleRegNumber();
-           // LIGNE CI-DESSOUS PROBLEME : IL RECUPERE LE PREMIER NUMERO DE TICKET CORR A IMMATRICULATION
+
             Ticket ticket = ticketDAO.getTicket(vehicleRegNumber); //récupère objet ticket corr à immatriculation dans la TABLE TICKET
             int number_of_tickets = ticketDAO.getNumberOfTickets(vehicleRegNumber);
             //ajout ICI il y avait un new dateForParkingApp, nouvel objet différent du mock ATTENTION ATTENTION
             Date outTime = dateForParkingApp.getDateForParkingApp();
 
-            //enlevé
-            //Date outTime = new Date();  // DATE ACTUELLE
-
-            ticket.setOutTime(outTime); //complète les informations du ticket:: null POinter exception
+            ticket.setOutTime(outTime);
+            System.out.println("outTime du ticket dans process is = " + outTime.toString());
 
             fareCalculatorService.calculateFare(ticket, number_of_tickets); // calcule le prix à partir des données du ticket
-            ticket.setRecurrent(true);
+
             if(ticketDAO.updateTicket(ticket)) { //place les données objet ticket DANS TABLE TICKET et renvoie oui ou non
                 ParkingSpot parkingSpot = ticket.getParkingSpot(); //récupère objet parkingSpot dans objet ticket
                 parkingSpot.setAvailable(true); //modifie available de ce parkingSpot à True
