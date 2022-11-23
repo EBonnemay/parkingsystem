@@ -20,13 +20,13 @@ public class ParkingService {
 
     private static final Logger logger = LogManager.getLogger("ParkingService");
 
-    private static FareCalculatorService fareCalculatorService = new FareCalculatorService();
+    private static final FareCalculatorService fareCalculatorService = new FareCalculatorService();
 
-    private InputReaderUtil inputReaderUtil;
-    private ParkingSpotDAO parkingSpotDAO;
-    private  TicketDAO ticketDAO;
+    private final InputReaderUtil inputReaderUtil;
+    private final ParkingSpotDAO parkingSpotDAO;// pourquoi est elle finale puisque'elle change de nature (libre ou non)
+    private final TicketDAO ticketDAO;//même question, son champ sortie est null et price à 0, puis changement ensuite.
     //ajout
-    private DateForParkingApp dateForParkingApp ;
+    private final DateForParkingApp dateForParkingApp ;
 
     public ParkingService(InputReaderUtil inputReaderUtil, ParkingSpotDAO parkingSpotDAO, TicketDAO ticketDAO, DateForParkingApp dateForParkingApp){
         this.inputReaderUtil = inputReaderUtil;
@@ -47,13 +47,14 @@ public class ParkingService {
                 parkingSpotDAO.updateParking(parkingSpot);//allot this parking space and mark its availability as false
 
                 Date inTime = dateForParkingApp.getDateForParkingApp();
+                ////////////////////////////JODA?
                 System.out.println("my date from class DFPA is = " + inTime);
 
                 System.out.println("inTime has just been set at " + inTime);
                 Ticket ticket = new Ticket();
                 System.out.println("ticket created");
                 //ID, PARKING_NUMBER, VEHICLE_REG_NUMBER, PRICE, IN_TIME, OUT_TIME)
-                //ticket.setId(ticketID);
+
                 ticket.setParkingSpot(parkingSpot);
                 ticket.setVehicleRegNumber(vehicleRegNumber);
                 ticket.setPrice(0);
@@ -71,13 +72,13 @@ public class ParkingService {
         }
     }
 
-    private String getVehichleRegNumber() throws Exception {
+    private String getVehichleRegNumber() {
         System.out.println("Please type the vehicle registration number and press enter key");
         return inputReaderUtil.readVehicleRegistrationNumber();
     }
 
     public ParkingSpot getNextParkingNumberIfAvailable(){
-        int parkingNumber=0;
+        int parkingNumber;
         ParkingSpot parkingSpot = null;
         try{
             ParkingType parkingType = getVehichleType();
@@ -124,6 +125,7 @@ public class ParkingService {
             Date outTime = dateForParkingApp.getDateForParkingApp();
 
             ticket.setOutTime(outTime);
+
             System.out.println("outTime du ticket dans process is = " + outTime.toString());
 
             fareCalculatorService.calculateFare(ticket, number_of_tickets); // calcule le prix à partir des données du ticket

@@ -5,12 +5,13 @@ import com.parkit.parkingsystem.constants.ParkingType;
 import com.parkit.parkingsystem.model.ParkingSpot;
 import com.parkit.parkingsystem.model.Ticket;
 import com.parkit.parkingsystem.service.FareCalculatorService;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Calendar;
 import java.util.Date;
 
 public class FareCalculatorServiceTest {
@@ -19,7 +20,7 @@ public class FareCalculatorServiceTest {
     private Ticket ticket;
 
     @BeforeAll
-    private static void setUp() {
+    public static void setUp() {
         fareCalculatorService = new FareCalculatorService();
     }
 
@@ -27,77 +28,32 @@ public class FareCalculatorServiceTest {
     private void setUpPerTest() {
         ticket = new Ticket();
     }
+    @Tag("calculateFareWithDurationsAtLeast30mnWithoutDiscounts")
+    @DisplayName("Vérifier le calcul du ticket sans réduction ou gratuité, durée >= 30mn - tests sur les durées et dateTimes entrée/sortie")
 
     @Test
-    public void calculateFareCar() {
-        Date inTime = new Date();
-        inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));
+    public void calculateFareCarWithFirstTimeClientStaying1HourLength() {
+
+        Date inTime = new Date(); //dateTime actuel
+        inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));//dateTime inTime = dateOutTime -1h
         Date outTime = new Date();
         ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
 
         ticket.setInTime(inTime);
         ticket.setOutTime(outTime);
         ticket.setParkingSpot(parkingSpot);
-        fareCalculatorService.calculateFare(ticket, 0);
-        assertEquals(ticket.getPrice(), Fare.CAR_RATE_PER_HOUR);
+        fareCalculatorService.calculateFare(ticket, 1);
+
+        double expected = Fare.CAR_RATE_PER_HOUR;
+        BigDecimal bd = new BigDecimal(expected).setScale(2, RoundingMode.HALF_UP);
+        double expectedDouble = bd.doubleValue();
+
+
+        assertEquals(expectedDouble, ticket.getPrice() );
     }
-
     @Test
-    public void calculateFareBike() {
-        Date inTime = new Date();
-        inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));
-        Date outTime = new Date();
-        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.BIKE, false);
+    public void calculateFareCarForFirstTimeCLientWith45mnParkingTime() {
 
-        ticket.setInTime(inTime);
-        ticket.setOutTime(outTime);
-        ticket.setParkingSpot(parkingSpot);
-        fareCalculatorService.calculateFare(ticket, 0);
-        assertEquals(ticket.getPrice(), Fare.BIKE_RATE_PER_HOUR);
-    }
-
-    @Test
-    public void calculateFareUnkownType() {
-        Date inTime = new Date();
-        inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));
-        Date outTime = new Date();
-        ParkingSpot parkingSpot = new ParkingSpot(1, null, false);
-
-        ticket.setInTime(inTime);
-        ticket.setOutTime(outTime);
-        ticket.setParkingSpot(parkingSpot);
-        assertThrows(NullPointerException.class, () -> fareCalculatorService.calculateFare(ticket, 0));
-    }
-
-    @Test
-    public void calculateFareBikeWithFutureInTime() {
-        Date inTime = new Date();
-        inTime.setTime(System.currentTimeMillis() + (60 * 60 * 1000));
-        Date outTime = new Date();
-        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.BIKE, false);
-
-        ticket.setInTime(inTime);
-        ticket.setOutTime(outTime);
-        ticket.setParkingSpot(parkingSpot);
-        assertThrows(IllegalArgumentException.class, () -> fareCalculatorService.calculateFare(ticket, 0));
-    }
-
-    @Test
-    public void calculateFareBikeWithLessThanOneHourParkingTime() {
-        Date inTime = new Date();
-        inTime.setTime(System.currentTimeMillis() - (45 * 60 * 1000));//45 minutes parking time should give 3/4th parking fare
-        Date outTime = new Date();
-        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.BIKE, false);
-
-        ticket.setInTime(inTime);
-        ticket.setOutTime(outTime);
-        ticket.setParkingSpot(parkingSpot);
-        fareCalculatorService.calculateFare(ticket, 0);
-        assertEquals((0.75 * Fare.BIKE_RATE_PER_HOUR), ticket.getPrice());
-    }
-
-    @Test
-    public void calculateFareCarWithLessThanOneHourParkingTime() {
         Date inTime = new Date();
         inTime.setTime(System.currentTimeMillis() - (45 * 60 * 1000));//45 minutes parking time should give 3/4th parking fare
         Date outTime = new Date();
@@ -106,12 +62,37 @@ public class FareCalculatorServiceTest {
         ticket.setInTime(inTime);
         ticket.setOutTime(outTime);
         ticket.setParkingSpot(parkingSpot);
-        fareCalculatorService.calculateFare(ticket, 0);
-        assertEquals((0.75 * Fare.CAR_RATE_PER_HOUR), ticket.getPrice());
+        fareCalculatorService.calculateFare(ticket, 1);
+
+        double expected = 0.75* Fare.CAR_RATE_PER_HOUR;
+        BigDecimal bd = new BigDecimal(expected).setScale(2, RoundingMode.HALF_UP);
+        double expectedDouble = bd.doubleValue();
+
+        assertEquals((double)expectedDouble, ticket.getPrice());
+    }
+    @Test
+    public void calculateFareBikeWithFirstTimeClientStaying30mn() {
+
+        Date inTime = new Date();
+        inTime.setTime(System.currentTimeMillis() - (30 * 60 * 1000));
+        Date outTime = new Date();
+        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.BIKE, false);
+
+        ticket.setInTime(inTime);
+        ticket.setOutTime(outTime);
+        ticket.setParkingSpot(parkingSpot);
+        fareCalculatorService.calculateFare(ticket, 1);
+
+        double expected = 0.5* Fare.BIKE_RATE_PER_HOUR;
+        BigDecimal bd = new BigDecimal(expected).setScale(2, RoundingMode.HALF_UP);
+        double expectedDouble = bd.doubleValue();
+
+        assertEquals(expectedDouble, ticket.getPrice());
     }
 
     @Test
-    public void calculateFareCarWithMoreThanADayParkingTime() {
+    public void calculateFareCarWithFirstTimeClientWith1DayParkingTime() {
+
         Date inTime = new Date();
         inTime.setTime(System.currentTimeMillis() - (24 * 60 * 60 * 1000));//24 hours parking time should give 24 * parking fare per hour
         Date outTime = new Date();
@@ -120,85 +101,251 @@ public class FareCalculatorServiceTest {
         ticket.setInTime(inTime);
         ticket.setOutTime(outTime);
         ticket.setParkingSpot(parkingSpot);
-        fareCalculatorService.calculateFare(ticket, 0);
-        assertEquals((24 * Fare.CAR_RATE_PER_HOUR), ticket.getPrice());
+        fareCalculatorService.calculateFare(ticket, 1);
+
+        double expected = 24* Fare.CAR_RATE_PER_HOUR;
+        BigDecimal bd = new BigDecimal(expected).setScale(2, RoundingMode.HALF_UP);
+        double expectedDouble = bd.doubleValue();
+
+        assertEquals(expectedDouble, ticket.getPrice());
     }
 
-    //quand ils restent moins de 30 mn, plus de 30 mn, plus de 30 mn sur deux jours, client récurrent vélo, client récurrent voiture.
+   @DisplayName("Vérifier que l'input d'une date de sortie de parking postérieure à la date d'entrée produit une exception")
     @Test
-    public void calculateFareCarWithRecurringClientStayingMoreThan30mn() {
-        Date dateTimeTestIn = new Date(2022 - 1900, 12 - 1, 15, 8, 30, 00);
-        Date dateTimeTestOut = new Date(2022 - 1900, 12 - 1, 15, 22, 30, 00);
 
+    public void calculateFareBikeWithFutureInTime() {
 
-        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
-        ticket.setInTime(dateTimeTestIn);
-        ticket.setOutTime(dateTimeTestOut);
+        Date inTime = new Date();
+        inTime.setTime(System.currentTimeMillis() + (60 * 60 * 1000));
+        Date outTime = new Date();
+        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.BIKE, false);
+
+        ticket.setInTime(inTime);
+        ticket.setOutTime(outTime);
         ticket.setParkingSpot(parkingSpot);
-        fareCalculatorService.calculateFare(ticket, 2);
-        assertEquals(19.95, ticket.getPrice());
+        assertThrows(IllegalArgumentException.class, () -> fareCalculatorService.calculateFare(ticket, 1));
     }
-@Test
-    public void calculateFareBikeWithRecurringClientStayingMoreThan30mnOn2Days(){
 
-    Date dateTimeTestIn = new Date(2022 - 1900, 11 - 1, 30, 23, 58, 00);
-    Date dateTimeTestOut = new Date(2022 - 1900, 12 - 1, 01, 00, 29, 00);
-    ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.BIKE, false);
-        ticket.setInTime(dateTimeTestIn);
-        ticket.setOutTime(dateTimeTestOut);
-        ticket.setParkingSpot(parkingSpot);
-        fareCalculatorService.calculateFare(ticket,2);
+    @Tag("LessThan30mnFreeParking")
+    @DisplayName("Appliquer la gratuité <30mn pour tous les types de véhiclules")
 
-    assertEquals(0.49083333333333334,ticket.getPrice());
-    }
     @Test
     public void calculateFareBikeWithFirstTimeClientStayingLessThan30mn(){
-        Date dateTimeTestIn = new Date(2022 - 1900, 11 - 1, 30, 8, 30, 00);
-        Date dateTimeTestOut = new Date(2022 - 1900, 11 - 1, 30, 8, 59, 00);
+        Date inTime = new Date();
+        inTime.setTime(System.currentTimeMillis() - (29 * 60 * 1000));//45 minutes parking time should give 3/4th parking fare
+        Date outTime = new Date();
+
         ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.BIKE, false);
-        ticket.setInTime(dateTimeTestIn);
-        ticket.setOutTime(dateTimeTestOut);
+        ticket.setInTime(inTime);
+        ticket.setOutTime(outTime);
         ticket.setParkingSpot(parkingSpot);
         fareCalculatorService.calculateFare(ticket,1);
 
-        assertEquals(0,ticket.getPrice());
+
+
+        assertEquals(0, ticket.getPrice());
+    }
+
+    @Test
+    public void calculateFareCarWithFirstTimeClientStayingLessThan30mn(){
+        Date inTime = new Date();
+        inTime.setTime(System.currentTimeMillis() - (29 * 60 * 1000));//45 minutes parking time should give 3/4th parking fare
+        Date outTime = new Date();
+
+        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
+        ticket.setInTime(inTime);
+        ticket.setOutTime(outTime);
+        ticket.setParkingSpot(parkingSpot);
+        fareCalculatorService.calculateFare(ticket,1);
+
+
+
+        assertEquals(0, ticket.getPrice());
+    }
+    @Test
+    @DisplayName("Soit une durée de stationnement de 30 et 4 sec minutes à cheval sur deux jours, lorsque l'utilisateur sort du parking, le système n'applique pas la gratuité")
+    public void calculateFareBikeWithFirstTimeClientStaying30mnAnd4SecOn2Days(){
+
+        Calendar cal1 = Calendar.getInstance();
+        cal1.set(2022, Calendar.NOVEMBER, 30, 23, 58, 4);
+
+        Calendar cal2 = Calendar.getInstance();
+        cal2.set(2022, Calendar.DECEMBER, 1, 0, 28, 8);
+        long dateInLong = cal1.getTimeInMillis();
+        long dateOutLong = cal2.getTimeInMillis();
+
+        Date dateIn = cal1.getTime();
+
+        Date dateOut = cal2.getTime();
+
+        double lengthInSec = (dateOutLong-dateInLong)/1000;
+
+
+        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.BIKE, false);
+        ticket.setInTime(dateIn);
+        ticket.setOutTime(dateOut);
+        ticket.setParkingSpot(parkingSpot);
+        fareCalculatorService.calculateFare(ticket,1);
+
+        double expected = Fare.BIKE_RATE_PER_HOUR/3600*lengthInSec;
+        BigDecimal bd = new BigDecimal(expected).setScale(2, RoundingMode.HALF_UP);
+        double expectedDouble = bd.doubleValue();
+
+        assertEquals(expectedDouble, ticket.getPrice());///0.5 expected,
+
+    }
+
+
+    @Test
+    @DisplayName("Soit une durée de stationnement de 30 et 4 sec minutes à cheval sur deux jours, lorsque l'utilisateur sort du parking, le système n'applique pas la gratuité")
+    public void calculateFareCarWithLongParking(){
+
+        Calendar cal1 = Calendar.getInstance();
+        cal1.set(2022, Calendar.NOVEMBER, 30, 23, 58, 4);
+
+        Calendar cal2 = Calendar.getInstance();
+        cal2.set(2023, Calendar.MARCH, 1, 0, 28, 8);
+        long dateInLong = cal1.getTimeInMillis();
+        long dateOutLong = cal2.getTimeInMillis();
+
+        Date dateIn = cal1.getTime();
+
+        Date dateOut = cal2.getTime();
+
+        double lengthInSec = (dateOutLong-dateInLong)/1000;
+
+
+        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
+        ticket.setInTime(dateIn);
+        ticket.setOutTime(dateOut);
+        ticket.setParkingSpot(parkingSpot);
+        fareCalculatorService.calculateFare(ticket,1);
+
+        double expected = Fare.CAR_RATE_PER_HOUR/3600*lengthInSec;
+        BigDecimal bd = new BigDecimal(expected).setScale(2, RoundingMode.HALF_UP);
+        double expectedDouble = bd.doubleValue();
+
+        assertEquals(expectedDouble, ticket.getPrice());///0.5 expected,
+
+    }
+    @Tag("calculateFareWithMissingInformationsReturnsExceptions")
+    @DisplayName("Soit une requête calculateFare dans laquelle ne figure pas de type de véhicule, lorsque cette méthode est appelée, alors elle renvoie une exception NullPointerException")
+    @Test
+    public void calculateFareWithUnkownType() {
+        Date inTime = new Date();
+        inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));
+        Date outTime = new Date();
+        ParkingSpot parkingSpot = new ParkingSpot(1, null, false);
+
+        ticket.setInTime(inTime);
+        ticket.setOutTime(outTime);
+        ticket.setParkingSpot(parkingSpot);
+        assertThrows(NullPointerException.class, () -> fareCalculatorService.calculateFare(ticket, 1));
+    }
+
+    @Test
+    @DisplayName("Soit une requête calculateFare dans laquelle le nombre de tickets correspondant à une immatriculation est inférieur à 1, lorsque cette méthode est appelée, alors elle renvoie une exception IllegalArgumentException")
+    public void calculateFareWithKnownTypeCarAndUnknownClientProfile() {
+        Date inTime = new Date();
+        inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));
+        Date outTime = new Date();
+        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR,false);
+
+        ticket.setInTime(inTime);
+        ticket.setOutTime(outTime);
+        ticket.setParkingSpot(parkingSpot);
+        assertThrows(IllegalArgumentException.class, () -> fareCalculatorService.calculateFare(ticket, -1));
+    }
+
+
+
+    @Tag("5%DiscountForRecurringClientsLength30mn0rMore")
+    @DisplayName("Soit une requête calculateFare dans laquelle le client (voiture ou vélo) est récurrent et reste 30 minutes ou plus, lorsque cette méthode est appelée, alors elle renvoie un prix de ticket rabaissé de 5%")
+
+    @Test
+    public void calculateFareCarWithRecurringClientStaying14hAnd3sec() {
+        Calendar cal1 = Calendar.getInstance();
+        cal1.set(2022, Calendar.NOVEMBER, 20, 8, 30, 4);
+        long dateInLong = cal1.getTimeInMillis();
+        Date dateIn = cal1.getTime();
+
+        Calendar cal2 = Calendar.getInstance();
+        cal2.set(2022, Calendar.NOVEMBER, 20, 22, 30, 7);
+        long dateOutLong = cal2.getTimeInMillis();
+        Date dateOut = cal2.getTime();
+
+
+        double lengthInSec = (dateOutLong-dateInLong)/1000;
+
+        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
+        ticket.setInTime(dateIn);
+        ticket.setOutTime(dateOut);
+        ticket.setParkingSpot(parkingSpot);
+        fareCalculatorService.calculateFare(ticket, 2);
+
+        double expected = Fare.CAR_RATE_PER_HOUR/3600*lengthInSec - ((Fare.CAR_RATE_PER_HOUR/3600*lengthInSec)*Fare.DISCOUNT/100);
+
+        BigDecimal bd = new BigDecimal(expected).setScale(2, RoundingMode.HALF_UP);
+        double expectedDouble = bd.doubleValue();
+
+        assertEquals(expectedDouble, ticket.getPrice());
+    }
+    @Test
+    public void calculateFareBikeWithRecurringClientStaying1h() {
+        Date inTime = new Date(); //dateTime actuel
+        inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));//dateTime inTime = dateOutTime -1h
+        Date outTime = new Date();
+        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.BIKE, false);
+
+        ticket.setInTime(inTime);
+        ticket.setOutTime(outTime);
+        ticket.setParkingSpot(parkingSpot);
+        fareCalculatorService.calculateFare(ticket, 2);
+
+        double expected = Fare.BIKE_RATE_PER_HOUR - (Fare.BIKE_RATE_PER_HOUR * Fare.DISCOUNT / 100);
+        BigDecimal bd = new BigDecimal(expected).setScale(2, RoundingMode.HALF_UP);
+        double expectedDouble = bd.doubleValue();
+
+        assertEquals(expectedDouble, ticket.getPrice());
+
+    }
+
+
+    @Tag("CombinationOf2discountConditions")
+    @DisplayName("Soit une requête calculateFare dans laquelle le client vélo ou voiture est récurrent ET reste moins de 30 minutes, lorsque cette méthode est appelée, alors elle 0")
+
+
+    @Test
+    public void calculateFareCarWithRecurringClientStayingLessThan30mn (){
+        Calendar cal = Calendar.getInstance();
+        cal.set(2022, Calendar.NOVEMBER, 30, 8, 30, 0);
+        Date dateTimeInInTest = cal.getTime();
+        cal.set(2022, Calendar.NOVEMBER, 30, 8, 59, 0);
+        Date dateTimeOutInTest = cal.getTime();
+
+        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
+        ticket.setInTime(dateTimeInInTest);
+        ticket.setOutTime(dateTimeOutInTest);
+        ticket.setParkingSpot(parkingSpot);
+        fareCalculatorService.calculateFare(ticket, 2);
+
+        assertEquals(0, ticket.getPrice());
+
     }
     @Test
     public void calculateFareBikeWithRecurringClientStayingLessThan30mn(){
 
-        Date dateTimeTestIn = new Date(2022 - 1900, 11 - 1, 30, 8, 30, 00);
-        Date dateTimeTestOut = new Date(2022 - 1900, 11 - 1, 30, 8, 59, 00);
+        Calendar cal = Calendar.getInstance();
+        cal.set(2022 , Calendar.NOVEMBER, 30, 8, 30, 0);
+        Date dateTimeInInTest = cal.getTime();
+        cal.set(2022 , Calendar.NOVEMBER, 30, 8, 59, 0);
+        Date dateTimeOutInTest = cal.getTime();
         ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.BIKE, false);
-        ticket.setInTime(dateTimeTestIn);
-        ticket.setOutTime(dateTimeTestOut);
+        ticket.setInTime(dateTimeInInTest);
+        ticket.setOutTime(dateTimeOutInTest);
         ticket.setParkingSpot(parkingSpot);
         fareCalculatorService.calculateFare(ticket,2);
 
         assertEquals(0,ticket.getPrice());
-    }
-    @Test
-    public void calculateFareCarWithFirstTimeClientStayingLessThan30mn(){
-        Date dateTimeTestIn = new Date(2022 - 1900, 11 - 1, 30, 8, 30, 00);
-        Date dateTimeTestOut = new Date(2022 - 1900, 11 - 1, 30, 8, 59, 00);
-        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
-        ticket.setInTime(dateTimeTestIn);
-        ticket.setOutTime(dateTimeTestOut);
-            ticket.setParkingSpot(parkingSpot);
-            fareCalculatorService.calculateFare(ticket,1);
-
-        assertEquals(0,ticket.getPrice());
-    }
-    @Test
-    public void calculateFareCarWithRecurringClientStayingLessThan30mn (){
-            Date dateTimeTestIn = new Date(2022 - 1900, 11 - 1, 30, 8, 30, 00);
-            Date dateTimeTestOut = new Date(2022 - 1900, 11 - 1, 30, 8, 59, 00);
-            ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
-            ticket.setInTime(dateTimeTestIn);
-            ticket.setOutTime(dateTimeTestOut);
-            ticket.setParkingSpot(parkingSpot);
-            fareCalculatorService.calculateFare(ticket, 2);
-
-            assertEquals(0, ticket.getPrice());
-
     }
 }
