@@ -22,6 +22,7 @@ public class FareCalculatorService {
         long inHourMillis = inHour.getTime();
         Date outHour = ticket.getOutTime();
         long outHourMillis = outHour.getTime();
+
         long durationJava = outHourMillis - inHourMillis;
 
 

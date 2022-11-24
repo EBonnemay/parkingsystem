@@ -149,12 +149,13 @@ public class ParkingDataBaseIT {
 
         //TODO: check that the fare generated and out time are populated (remplis) correctly in the database
         Date getOutTimeTicketDAO = ticket.getOutTime();
+        System.out.println(getOutTimeTicketDAO.toString());
         Double price = ticket.getPrice();
 
-        //assertThat(ticket.getOutTime().isNotNull());
-        System.out.println(price);
-        //assertThat(price);
-        assertThat(getOutTimeTicketDAO);
+        assertThat(ticket.getOutTime());
+       // System.out.println(price);
+        assertThat(price);
+        //assertThat(getOutTimeTicketDAO);
     }
 
 

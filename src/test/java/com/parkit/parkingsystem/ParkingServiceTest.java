@@ -17,6 +17,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Date;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -75,6 +77,39 @@ public class ParkingServiceTest {
         verify (parkingSpotDAO, Mockito.times(1)).getNextAvailableSlot(ParkingType.CAR);
     }
 
+    /*@Test
+    public void processIncomingVehicleTestReadSelection(){
+
+        when(inputReaderUtil.readSelection()).thenReturn(4);
+        when( parkingSpotDAO.getNextAvailableSlot(any(ParkingType.class))).thenReturn(1);
+        parkingService.processIncomingVehicle();
+        //verify(ticketDAO, Mockito.times(1)).updateTicket(any(Ticket.class));
+        verify(parkingSpotDAO, Mockito.times(1)).updateParking(any(ParkingSpot.class));
+        verify(ticketDAO, Mockito.times(1)).getTicket("ABCDEF");
+        verify(dateForParkingApp, Mockito.times(1)).getDateForParkingApp();
+        verify (parkingSpotDAO, Mockito.times(1)).getNextAvailableSlot(ParkingType.CAR);
+    }*/
+
+   /* @Test
+    public void getNextParkingNumberIfAvailableWithParkingNumberErrorTest() throws Exception{
+
+        when(inputReaderUtil.readSelection()).thenReturn(1);
+        when(parkingSpotDAO.getNextAvailableSlot(any(ParkingType.class))).thenReturn(1);
+        parkingService.processIncomingVehicle();
+        when(parkingSpotDAO.getNextAvailableSlot(any(ParkingType.class))).thenReturn(2);
+        assertThrows(Exception.class, () -> parkingService.processIncomingVehicle());
+
+        //when(inputReaderUtil.readSelection()).thenReturn(4);
+        //when( parkingSpotDAO.getNextAvailableSlot(any(ParkingType.class))).thenReturn(0);
+        //parkingService.getNextParkingNumberIfAvailable();
+        //Exception exception = assertThrows(Exception.class, () -> parkingService.getNextParkingNumberIfAvailable());
+       // assertEquals("Error fetching parking number from DB. Parking slots might be full", Exception.getMessage());
+        //verify(ticketDAO, Mockito.times(1)).updateTicket(any(Ticket.class));
+        //verify(parkingSpotDAO, Mockito.times(1)).updateParking(any(ParkingSpot.class));
+        //verify(ticketDAO, Mockito.times(1)).getTicket("ABCDEF");
+        //verify(dateForParkingApp, Mockito.times(1)).getDateForParkingApp();
+        //verify (parkingSpotDAO, Mockito.times(1)).getNextAvailableSlot(ParkingType.CAR);
+    }*/
     @Test
     public void processExitingVehicleTest(){
         //ci-dessous nécessaire?
@@ -85,5 +120,14 @@ public class ParkingServiceTest {
         verify(ticketDAO, Mockito.times(1)).getTicket("ABCDEF");
         verify(dateForParkingApp, Mockito.times(1)).getDateForParkingApp();
     }
-
+   /* @Test
+    public void processExitingVehicleTestException(){
+        //ci-dessous nécessaire?
+        when(ticketDAO.updateTicket(any(Ticket.class))).thenReturn(true);
+        parkingService.processExitingVehicle();
+        verify(ticketDAO, Mockito.times(1)).updateTicket(any(Ticket.class));
+        verify(parkingSpotDAO, Mockito.times(1)).updateParking(any(ParkingSpot.class));
+        verify(ticketDAO, Mockito.times(1)).getTicket("ABCDEF");
+        verify(dateForParkingApp, Mockito.times(1)).getDateForParkingApp();
+    }*/
 }

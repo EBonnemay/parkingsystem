@@ -19,7 +19,6 @@ import java.util.Date;
 public class ParkingService {
 
     private static final Logger logger = LogManager.getLogger("ParkingService");
-
     private static final FareCalculatorService fareCalculatorService = new FareCalculatorService();
 
     private final InputReaderUtil inputReaderUtil;
@@ -82,7 +81,7 @@ public class ParkingService {
         ParkingSpot parkingSpot = null;
         try{
             ParkingType parkingType = getVehichleType();
-            parkingNumber = parkingSpotDAO.getNextAvailableSlot(parkingType);
+            parkingNumber = parkingSpotDAO.getNextAvailableSlot(parkingType); //number = -1
             if(parkingNumber > 0){
                 parkingSpot = new ParkingSpot(parkingNumber,parkingType, true);
             }else{
