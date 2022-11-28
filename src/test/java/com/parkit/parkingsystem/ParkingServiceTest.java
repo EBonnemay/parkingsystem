@@ -23,12 +23,7 @@ import static org.mockito.Mockito.*;
 public class ParkingServiceTest {
 
     private static ParkingService parkingService;
-    //private static ParkingType parkingType = ParkingType.CAR;
 
-    /*@InjectMocks
-    @Spy
-    private ParkingService myParkingService;
-     */
     @Mock
     private static InputReaderUtil inputReaderUtil;// crée un double de la classe InputReaderUtil
     @Mock
@@ -39,34 +34,6 @@ public class ParkingServiceTest {
     @Mock
     private static DateForParkingApp dateForParkingApp;
 
-    /*@BeforeEach
-    private void setUpPerTest() {
-        try {
-            when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
-
-
-            ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
-            Ticket ticket = new Ticket();
-            ticket.setInTime(new Date(System.currentTimeMillis() - (60 * 60 * 1000)));
-            //ticket.setOutTime(new Date(System.currentTimeMillis() - (60*60*1000)));
-            System.out.println("time in millis is = " + ticket.getInTime());
-            ticket.setParkingSpot(parkingSpot);
-            ticket.setVehicleRegNumber("ABCDEF");
-            when(ticketDAO.getTicket(anyString())).thenReturn(ticket);
-
-//quand la méthode parkingSpotDao.updateParking(n'importe q instance de la classe parkingSpot) te demande si cette place a été mise à jour, réponds "VRAI"
-            when(parkingSpotDAO.updateParking(any(ParkingSpot.class))).thenReturn(true);
-
-            when(dateForParkingApp.getDateForParkingApp()).thenReturn(new Date(System.currentTimeMillis() - (60 * 60 * 1000)));
-            System.out.println("current time is = " + (System.currentTimeMillis() - (60 * 60 * 1000)));
-            parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO, dateForParkingApp);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Failed to set up test mock objects");
-        }*/
-
-
-
     @Test
     public void processIncomingVehicleTest() {
         try {
@@ -76,17 +43,13 @@ public class ParkingServiceTest {
             ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
             Ticket ticket = new Ticket();
             ticket.setInTime(new Date(System.currentTimeMillis() - (60 * 60 * 1000)));
-            //ticket.setOutTime(new Date(System.currentTimeMillis() - (60*60*1000)));
-            System.out.println("time in millis is = " + ticket.getInTime());
             ticket.setParkingSpot(parkingSpot);
             ticket.setVehicleRegNumber("ABCDEF");
+
             when(ticketDAO.getTicket(anyString())).thenReturn(ticket);
-
-//quand la méthode parkingSpotDao.updateParking(n'importe q instance de la classe parkingSpot) te demande si cette place a été mise à jour, réponds "VRAI"
             when(parkingSpotDAO.updateParking(any(ParkingSpot.class))).thenReturn(true);
-
             when(dateForParkingApp.getDateForParkingApp()).thenReturn(new Date(System.currentTimeMillis() - (60 * 60 * 1000)));
-            System.out.println("current time is = " + (System.currentTimeMillis() - (60 * 60 * 1000)));
+
             parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO, dateForParkingApp);
         } catch (Exception e) {
             e.printStackTrace();
@@ -110,17 +73,13 @@ public class ParkingServiceTest {
             ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
             Ticket ticket = new Ticket();
             ticket.setInTime(new Date(System.currentTimeMillis() - (60 * 60 * 1000)));
-            //ticket.setOutTime(new Date(System.currentTimeMillis() - (60*60*1000)));
-            System.out.println("time in millis is = " + ticket.getInTime());
             ticket.setParkingSpot(parkingSpot);
             ticket.setVehicleRegNumber("ABCDEF");
             when(ticketDAO.getTicket(anyString())).thenReturn(ticket);
 
-//quand la méthode parkingSpotDao.updateParking(n'importe q instance de la classe parkingSpot) te demande si cette place a été mise à jour, réponds "VRAI"
             when(parkingSpotDAO.updateParking(any(ParkingSpot.class))).thenReturn(true);
 
             when(dateForParkingApp.getDateForParkingApp()).thenReturn(new Date(System.currentTimeMillis() - (60 * 60 * 1000)));
-            System.out.println("current time is = " + (System.currentTimeMillis() - (60 * 60 * 1000)));
             parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO, dateForParkingApp);
         } catch (Exception e) {
             e.printStackTrace();
@@ -136,23 +95,12 @@ public class ParkingServiceTest {
     @Test
     public void getNextCarParkingNumberIfNotAvailableTest(){
         try {
-            //when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
-
-
             ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
             Ticket ticket = new Ticket();
             ticket.setInTime(new Date(System.currentTimeMillis() - (60 * 60 * 1000)));
-            //ticket.setOutTime(new Date(System.currentTimeMillis() - (60*60*1000)));
-            System.out.println("time in millis is = " + ticket.getInTime());
             ticket.setParkingSpot(parkingSpot);
             ticket.setVehicleRegNumber("ABCDEF");
-            //when(ticketDAO.getTicket(anyString())).thenReturn(ticket);
 
-//quand la méthode parkingSpotDao.updateParking(n'importe q instance de la classe parkingSpot) te demande si cette place a été mise à jour, réponds "VRAI"
-            //when(parkingSpotDAO.updateParking(any(ParkingSpot.class))).thenReturn(true);
-
-            //when(dateForParkingApp.getDateForParkingApp()).thenReturn(new Date(System.currentTimeMillis() - (60 * 60 * 1000)));
-            //System.out.println("current time is = " + (System.currentTimeMillis() - (60 * 60 * 1000)));
             parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO, dateForParkingApp);
         } catch (Exception e) {
             e.printStackTrace();
@@ -171,23 +119,13 @@ public class ParkingServiceTest {
     @Test
     public void getNextBikeParkingNumberIfNotAvailableTest(){
         try {
-            //when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
-
 
             ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.BIKE, false);
             Ticket ticket = new Ticket();
             ticket.setInTime(new Date(System.currentTimeMillis() - (60 * 60 * 1000)));
-            //ticket.setOutTime(new Date(System.currentTimeMillis() - (60*60*1000)));
-            System.out.println("time in millis is = " + ticket.getInTime());
             ticket.setParkingSpot(parkingSpot);
             ticket.setVehicleRegNumber("GHIJKL");
-            //when(ticketDAO.getTicket(anyString())).thenReturn(ticket);
 
-//quand la méthode parkingSpotDao.updateParking(n'importe q instance de la classe parkingSpot) te demande si cette place a été mise à jour, réponds "VRAI"
-            //when(parkingSpotDAO.updateParking(any(ParkingSpot.class))).thenReturn(true);
-
-            //when(dateForParkingApp.getDateForParkingApp()).thenReturn(new Date(System.currentTimeMillis() - (60 * 60 * 1000)));
-            //System.out.println("current time is = " + (System.currentTimeMillis() - (60 * 60 * 1000)));
             parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO, dateForParkingApp);
         } catch (Exception e) {
             e.printStackTrace();

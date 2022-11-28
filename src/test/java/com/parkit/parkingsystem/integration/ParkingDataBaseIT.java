@@ -18,7 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Calendar;
 import java.util.Date;
 
-import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
@@ -47,24 +47,13 @@ public class ParkingDataBaseIT {
         dataBasePrepareService = new DataBasePrepareService();
     }
 
-    /*@BeforeEach
-    private void setUpPerTest() throws Exception {
-        when(inputReaderUtil.readSelection()).thenReturn(1);
-
-        when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
-
-        dataBasePrepareService.clearDataBaseEntries();
-
-    }*/
-
     @AfterAll
-    private static void tearDown() { //Après tous les tests exécute "tear down"(??)
+    public static void tearDown() {
 
     }
 
     @Test
 
-    //THROWS EXCEPTION CI-DESSOUS?
     public void testParkingACar()  {
         //GIVEN - ARRANGE
         when(inputReaderUtil.readSelection()).thenReturn(1);
@@ -144,12 +133,8 @@ public class ParkingDataBaseIT {
         parkingService.processExitingVehicle();
 
         String encodedRegistration = inputReaderUtil.readVehicleRegistrationNumber();
-        Ticket ticket = ticketDAO.getTicket(encodedRegistration); // On rehydate l'objet ticket avec la valeur de la DB
 
         //TODO: check that the fare generated and out time are populated (remplis) correctly in the database
-        //Date getOutTimeTicketDAO = ticket.getOutTime();
-        // System.out.println(getOutTimeTicketDAO.toString());
-        // Double price = ticket.getPrice();
 
         assertTrue(ticketDAO.getTicket(encodedRegistration).getPrice() > 0);
         assertNotNull(ticketDAO.getTicket(encodedRegistration).getOutTime());
@@ -160,12 +145,9 @@ public class ParkingDataBaseIT {
 
 
         testParkingABike();
-        System.out.println(ticketDAO.getTicket("GHIJKL").getOutTime());
-        System.out.println(ticketDAO.getTicket("GHIJKL").getPrice());
         Calendar cal = Calendar.getInstance();
         cal.set(2022, Calendar.DECEMBER, 19, 22, 30, 0);
         Date dateTimeOutInTestExitFromCal = cal.getTime();
-        System.out.println("dateTimeOutInTestExitFromCal is " + dateTimeOutInTestExitFromCal);
         when(dateForParkingApp.getDateForParkingApp()).thenReturn(dateTimeOutInTestExitFromCal);
 
         ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO, dateForParkingApp); //parce que je vais avoir besoin d'un
@@ -174,12 +156,8 @@ public class ParkingDataBaseIT {
         parkingService.processExitingVehicle();
 
         String encodedRegistration = inputReaderUtil.readVehicleRegistrationNumber();
-        Ticket ticket = ticketDAO.getTicket(encodedRegistration); // On rehydate l'objet ticket avec la valeur de la DB
 
         //TODO: check that the fare generated and out time are populated (remplis) correctly in the database
-        //Date getOutTimeTicketDAO = ticket.getOutTime();
-        // System.out.println(getOutTimeTicketDAO.toString());
-        // Double price = ticket.getPrice();
 
         assertTrue(ticketDAO.getTicket(encodedRegistration).getPrice() > 0);
         assertNotNull(ticketDAO.getTicket(encodedRegistration).getOutTime());

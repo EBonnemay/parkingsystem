@@ -25,7 +25,7 @@ public class FareCalculatorServiceTest {
     }
 
     @BeforeEach
-    private void setUpPerTest() {
+    public void setUpPerTest() {
         ticket = new Ticket();
     }
 
@@ -69,7 +69,7 @@ public class FareCalculatorServiceTest {
         BigDecimal bd = new BigDecimal(expected).setScale(2, RoundingMode.HALF_UP);
         double expectedDouble = bd.doubleValue();
 
-        assertEquals((double)expectedDouble, ticket.getPrice());
+        assertEquals(expectedDouble, ticket.getPrice());
     }
     @Test
     public void calculateFareBikeWithFirstTimeClientStaying30mn() {
@@ -179,7 +179,7 @@ public class FareCalculatorServiceTest {
 
         Date dateOut = cal2.getTime();
 
-        double lengthInSec = (dateOutLong-dateInLong)/1000;
+        double lengthInSec = (dateOutLong-dateInLong)/1000.0;
 
 
         ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.BIKE, false);
@@ -213,7 +213,7 @@ public class FareCalculatorServiceTest {
 
         Date dateOut = cal2.getTime();
 
-        double lengthInSec = (dateOutLong-dateInLong)/1000;
+        double lengthInSec = (dateOutLong-dateInLong)/1000.0;
 
 
         ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
@@ -276,7 +276,7 @@ public class FareCalculatorServiceTest {
         Date dateOut = cal2.getTime();
 
 
-        double lengthInSec = (dateOutLong-dateInLong)/1000;
+        double lengthInSec = (dateOutLong-dateInLong)/1000.0;
 
         ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
         ticket.setInTime(dateIn);

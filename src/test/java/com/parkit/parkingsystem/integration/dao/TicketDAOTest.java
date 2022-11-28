@@ -12,32 +12,22 @@ import org.junit.jupiter.api.*;
 
 import java.util.Date;
 
-import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-//@ExtendWith(MockitoExtension.class)
 public class TicketDAOTest {
         private static final DataBaseTestConfig dataBaseTestConfig = new DataBaseTestConfig();
-        private static ParkingSpotDAO parkingSpotDAO;
-        private static TicketDAO ticketDAO;
+    private static TicketDAO ticketDAO;
         private static DataBasePrepareService dataBasePrepareService;
 
         private static Ticket ticket;
-        private static String testRegistration = "12345";
-
-        private static Date date;
-//ici rajouter parkingspot et ticket et reader util???
-    //@Mock
-    //private static Ticket ticket;
-
-    //@Mock
-    //private static ParkingSpot parkingSpot;
+        private static final String testRegistration = "12345";
 
 
         @BeforeAll
 
         public static void setUp() {
-            parkingSpotDAO = new ParkingSpotDAO();
+            ParkingSpotDAO parkingSpotDAO = new ParkingSpotDAO();
             //les 3 suivants dans forEach?
             parkingSpotDAO.dataBaseConfig = dataBaseTestConfig;
             ticketDAO = new TicketDAO();
@@ -46,7 +36,7 @@ public class TicketDAOTest {
         }
 
         @BeforeEach
-        private void setUpPerTest() throws Exception {
+        public void setUpPerTest() {
 
             dataBasePrepareService.clearDataBaseEntries();
             ticket = new Ticket();
@@ -93,18 +83,8 @@ public class TicketDAOTest {
             ticket.setPrice(priceExpected);
 
             ticketDAO.updateTicket(ticket);
-            assertEquals ( true, ticketDAO.updateTicket(ticket));
-           // double priceInDB = ticketDAO.getTicket(testRegistration).getPrice();
-           // System.out.println("price expected is "+ priceExpected);
-           // System.out.println("price in db is "+ priceInDB);
-           // assertEquals(priceExpected, priceInDB);
-            //assertEquals(date, ticketDAO.getTicket(testRegistration).getOutTime());
+            assertTrue(ticketDAO.updateTicket(ticket));
 
         }
 
 }
-       /* @Test
-        public void updateTicketTest(){
-
-        }*/
-

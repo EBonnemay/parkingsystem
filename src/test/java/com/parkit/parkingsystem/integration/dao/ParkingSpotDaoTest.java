@@ -18,7 +18,6 @@ public class ParkingSpotDaoTest {
 
 
     @BeforeAll
-
     public static void setUp() {
         parkingSpotDAO = new ParkingSpotDAO();
         parkingSpotDAO.dataBaseConfig = dataBaseTestConfig;
@@ -28,7 +27,7 @@ public class ParkingSpotDaoTest {
     }
 
     @BeforeEach
-    private void setUpPerTest() throws Exception {
+    public void setUpPerTest() {
 
         dataBasePrepareService.clearDataBaseEntries();
 
@@ -36,26 +35,23 @@ public class ParkingSpotDaoTest {
     @Test
     public void getNextAvailableSlotBikeTest() {
         //Arrange
-
         ParkingType parkingType = ParkingType.BIKE;
 
         //Act
         int number = parkingSpotDAO.getNextAvailableSlot(parkingType);
+
         //Assert
-
         assertEquals(4, number);
-
-
     }
 
     @Test
     public void getNextAvailableSlotCarTest() {
         //Arrange
-
         ParkingType parkingType = ParkingType.CAR;
 
         //Act
         int number = parkingSpotDAO.getNextAvailableSlot(parkingType);
+
         //Assert
         assertEquals(1, number);
         // (ou ParkingType.valieOf(CAR))
@@ -74,7 +70,7 @@ public class ParkingSpotDaoTest {
         //ASSERT
 
 
-        assertEquals(true, result);
+        assertTrue(result);
 
 
     }
@@ -89,12 +85,9 @@ public class ParkingSpotDaoTest {
 
             //ACT
             boolean result = parkingSpotDAO.updateParking(parkingSpot);
+
             //ASSERT
-
-
-            assertEquals(true, result);
-
-
+        assertTrue(result);
         }
 
     }
