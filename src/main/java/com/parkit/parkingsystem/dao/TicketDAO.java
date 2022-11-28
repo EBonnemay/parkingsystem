@@ -30,14 +30,7 @@ public class TicketDAO {
             ps.setString(2, ticket.getVehicleRegNumber());
             ps.setDouble(3, ticket.getPrice());
             Timestamp timestamp = new Timestamp(ticket.getInTime().getTime());
-            ps.setTimestamp(4, timestamp);////////////////JODA TIMESTAMP
-            //ticket.getInTime() is Wed Nov 23 09:47:24 CET 2022
-            //ticket.getInTime().getTime() is 1669193244786
-            //timestamp is 2022-11-23 09:47:24.786////////////////////////////////ce que doit récupérer la db
-
-            System.out.println("ticket.getInTime() is "+ticket.getInTime());
-            System.out.println("ticket.getInTime().getTime() is "+ticket.getInTime().getTime());
-            System.out.println("timestamp is "+ timestamp);
+            ps.setTimestamp(4, timestamp);
 
             ps.setTimestamp(5, (ticket.getOutTime() == null)?null: (new Timestamp(ticket.getOutTime().getTime())) );
             ps.execute();
@@ -45,8 +38,9 @@ public class TicketDAO {
             logger.error("Error fetching next available slot",ex);
         } finally {
             dataBaseConfig.closeConnection(con);
-            return;
+
         }
+
     }
 
     public Ticket getTicket(String vehicleRegNumber) {
@@ -74,8 +68,9 @@ public class TicketDAO {
             logger.error("Error fetching next available slot",ex);
         }finally {
             dataBaseConfig.closeConnection(con);
-            return ticket;
+
         }
+        return ticket;
     }
 
     public boolean updateTicket(Ticket ticket) {
@@ -114,8 +109,8 @@ public class TicketDAO {
             logger.error("Error getting number of tickets",ex);
         }  finally {
             dataBaseConfig.closeConnection(con);
-            return result;
-        }
 
+        }
+        return result;
     }
 }

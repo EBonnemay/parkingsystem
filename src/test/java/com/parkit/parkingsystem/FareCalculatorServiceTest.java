@@ -28,6 +28,7 @@ public class FareCalculatorServiceTest {
     private void setUpPerTest() {
         ticket = new Ticket();
     }
+
     @Tag("calculateFareWithDurationsAtLeast30mnWithoutDiscounts")
     @DisplayName("Vérifier le calcul du ticket sans réduction ou gratuité, durée >= 30mn - tests sur les durées et dateTimes entrée/sortie")
 
@@ -163,14 +164,14 @@ public class FareCalculatorServiceTest {
         assertEquals(0, ticket.getPrice());
     }
     @Test
-    @DisplayName("Soit une durée de stationnement de 30 et 4 sec minutes à cheval sur deux jours, lorsque l'utilisateur sort du parking, le système n'applique pas la gratuité")
+    @DisplayName("Soit une durée de stationnement de 30 mn et 4 sec minutes à cheval sur deux jours, lorsque l'utilisateur sort du parking, le système n'applique pas la gratuité")
     public void calculateFareBikeWithFirstTimeClientStaying30mnAnd4SecOn2Days(){
 
         Calendar cal1 = Calendar.getInstance();
-        cal1.set(2022, Calendar.NOVEMBER, 30, 23, 58, 4);
+        cal1.set(2022, Calendar.NOVEMBER, 30, 23, 59, 4);
 
         Calendar cal2 = Calendar.getInstance();
-        cal2.set(2022, Calendar.DECEMBER, 1, 0, 28, 8);
+        cal2.set(2022, Calendar.DECEMBER, 1, 0, 29, 4);
         long dateInLong = cal1.getTimeInMillis();
         long dateOutLong = cal2.getTimeInMillis();
 

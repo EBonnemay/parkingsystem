@@ -6,14 +6,10 @@ import com.parkit.parkingsystem.dao.TicketDAO;
 import com.parkit.parkingsystem.model.ParkingSpot;
 import com.parkit.parkingsystem.model.Ticket;
 import com.parkit.parkingsystem.util.InputReaderUtil;
-//ajout
-import com.parkit.parkingsystem.service.DateForParkingApp;
+import com.parkit.parkingsystem.util.DateForParkingApp;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.inject.Inject;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class ParkingService {
@@ -46,13 +42,11 @@ public class ParkingService {
                 parkingSpotDAO.updateParking(parkingSpot);//allot this parking space and mark its availability as false
 
                 Date inTime = dateForParkingApp.getDateForParkingApp();
-                ////////////////////////////JODA?
-                System.out.println("my date from class DFPA is = " + inTime);
 
                 System.out.println("inTime has just been set at " + inTime);
                 Ticket ticket = new Ticket();
                 System.out.println("ticket created");
-                //ID, PARKING_NUMBER, VEHICLE_REG_NUMBER, PRICE, IN_TIME, OUT_TIME)
+
 
                 ticket.setParkingSpot(parkingSpot);
                 ticket.setVehicleRegNumber(vehicleRegNumber);
@@ -76,7 +70,7 @@ public class ParkingService {
         return inputReaderUtil.readVehicleRegistrationNumber();
     }
 
-    public ParkingSpot getNextParkingNumberIfAvailable(){
+    public ParkingSpot getNextParkingNumberIfAvailable() throws Exception{
         int parkingNumber;
         ParkingSpot parkingSpot = null;
         try{
@@ -91,6 +85,7 @@ public class ParkingService {
             logger.error("Error parsing user input for type of vehicle", ie);
         }catch(Exception e){
             logger.error("Error fetching next available parking slot", e);
+            throw e;
         }
         return parkingSpot;
     }
@@ -124,8 +119,6 @@ public class ParkingService {
             Date outTime = dateForParkingApp.getDateForParkingApp();
 
             ticket.setOutTime(outTime);
-
-            System.out.println("outTime du ticket dans process is = " + outTime.toString());
 
             fareCalculatorService.calculateFare(ticket, number_of_tickets); // calcule le prix à partir des données du ticket
 

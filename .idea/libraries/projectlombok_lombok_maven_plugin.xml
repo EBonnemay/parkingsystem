@@ -1,0 +1,22 @@
+<component name="libraryTable">
+  <library name="projectlombok.lombok.maven.plugin" type="repository">
+    <properties maven-id="org.projectlombok:lombok-maven-plugin:1.14.8.0" />
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/lombok-maven-plugin-1.14.8.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/commons-lang3-3.3.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/maven-plugin-api-3.0.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/maven-model-3.0.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/plexus-utils-2.0.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/maven-artifact-3.0.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/sisu-inject-plexus-2.3.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/plexus-component-annotations-1.5.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/plexus-classworlds-2.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/sisu-inject-bean-2.3.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/sisu-guice-3.1.0-no_aop.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/sisu-guava-0.9.9.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/lombok-1.14.8.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
