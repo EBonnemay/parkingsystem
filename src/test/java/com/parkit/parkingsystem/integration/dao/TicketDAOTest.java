@@ -53,13 +53,40 @@ public class TicketDAOTest {
 
 //délcarer un ticketDAO.databaseconfig et instancier un ticketDAO?
         }
+
+        @Test
+        public void getNumberOfTicketTest(){
+            ticketDAO.saveTicket(ticket);
+            double priceExpected = 4.5;
+            Date date2 = new Date();
+            ticket.setOutTime(date2);
+            ticket.setPrice(priceExpected);
+
+            ticketDAO.updateTicket(ticket);
+            //assertEquals(1,ticketDAO.getNumberOfTickets(testRegistration));
+            ticket = new Ticket();
+            ParkingSpot parkingSpot = new ParkingSpot(2, ParkingType.CAR, false);
+            //String testRegistration = "12345";
+            ticket.setId(2);
+            ticket.setParkingSpot(parkingSpot);
+            ticket.setVehicleRegNumber(testRegistration);
+            ticket.setPrice(0);
+            Date date = new Date();
+            date.setTime(System.currentTimeMillis() - (180 * 60 * 1000));
+            ticket.setInTime(date);
+            ticket.setOutTime(null);
+            ticketDAO.saveTicket(ticket);
+            assertEquals(2,ticketDAO.getNumberOfTickets(testRegistration));
+
+    }
+
         @Test
 
         public void saveTicketTest() {
 
 
 
-            ticketDAO.saveTicket(ticket);///PROBLEME
+            ticketDAO.saveTicket(ticket);
 
 
             //ASSERT
@@ -86,5 +113,6 @@ public class TicketDAOTest {
             assertTrue(ticketDAO.updateTicket(ticket));
 
         }
+
 
 }
