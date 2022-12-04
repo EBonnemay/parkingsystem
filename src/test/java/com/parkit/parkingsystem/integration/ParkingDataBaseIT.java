@@ -121,11 +121,20 @@ public class ParkingDataBaseIT {
         testParkingACar();
         System.out.println(ticketDAO.getTicket("ABCDEF").getOutTime());
         System.out.println(ticketDAO.getTicket("ABCDEF").getPrice());
-        Calendar cal = Calendar.getInstance();
-        cal.set(2022, Calendar.DECEMBER, 19, 22, 30, 0);
-        Date dateTimeOutInTestExitFromCal = cal.getTime();
-        System.out.println("dateTimeOutInTestExitFromCal is " + dateTimeOutInTestExitFromCal);
-        when(dateForParkingApp.getDateForParkingApp()).thenReturn(dateTimeOutInTestExitFromCal);
+        long timeIn = ticketDAO.getTicket("ABCDEF").getInTime().getTime();
+        long timeOut = timeIn + (60 * 60 * 1000);
+        System.out.println("voici timeout "+ timeOut);
+        //long dateIn = timeIn.getTime();
+       // System.out.println("voici dateIn en long "+dateIn);
+       // long dateOut = dateIn + (60 * 60 * 1000);
+       Date dateOut = new Date(timeOut);
+        //System.out.println(timeOut);
+        //new Date(System.currentTimeMillis() - (60 * 60 * 1000);
+        //Calendar cal = Calendar.getInstance();
+        //cal.set(2022, Calendar.DECEMBER, 19, 22, 30, 0);
+       // Date dateTimeOutInTestExitFromCal = cal.getTime();
+       // System.out.println("dateTimeOutInTestExitFromCal is " + dateTimeOutInTestExitFromCal);
+        when(dateForParkingApp.getDateForParkingApp()).thenReturn(dateOut);
 
         ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO, dateForParkingApp); //parce que je vais avoir besoin d'un
         //nouvel outil de communication avec la DB sur base de mes variables de classe déf ci dessus (inputRU, PSDAO, TDAO)
@@ -140,15 +149,27 @@ public class ParkingDataBaseIT {
         assertNotNull(ticketDAO.getTicket(encodedRegistration).getOutTime());
     }
     @Test
-    //ajout de throws dans une méthode de test...
+
     public void testParkingLotExitBIKE() {
 
 
         testParkingABike();
-        Calendar cal = Calendar.getInstance();
-        cal.set(2022, Calendar.DECEMBER, 19, 22, 30, 0);
-        Date dateTimeOutInTestExitFromCal = cal.getTime();
-        when(dateForParkingApp.getDateForParkingApp()).thenReturn(dateTimeOutInTestExitFromCal);
+
+        long timeIn = ticketDAO.getTicket("GHIJKL").getInTime().getTime();
+        long timeOut = timeIn + (60 * 60 * 1000);
+        System.out.println("voici timeout "+ timeOut);
+        //long dateIn = timeIn.getTime();
+        // System.out.println("voici dateIn en long "+dateIn);
+        // long dateOut = dateIn + (60 * 60 * 1000);
+        Date dateOut = new Date(timeOut);
+        //System.out.println(timeOut);
+        //new Date(System.currentTimeMillis() - (60 * 60 * 1000);
+        //Calendar cal = Calendar.getInstance();
+        //cal.set(2022, Calendar.DECEMBER, 19, 22, 30, 0);
+        // Date dateTimeOutInTestExitFromCal = cal.getTime();
+        // System.out.println("dateTimeOutInTestExitFromCal is " + dateTimeOutInTestExitFromCal);
+        when(dateForParkingApp.getDateForParkingApp()).thenReturn(dateOut);
+
 
         ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO, dateForParkingApp); //parce que je vais avoir besoin d'un
         //nouvel outil de communication avec la DB sur base de mes variables de classe déf ci dessus (inputRU, PSDAO, TDAO)
@@ -163,5 +184,37 @@ public class ParkingDataBaseIT {
         assertNotNull(ticketDAO.getTicket(encodedRegistration).getOutTime());
     }
 
+    @Test
+    public void differentTicketsForMultipleParkingsSameCarTest(){
+        testParkingLotExitCAR();
+        int id = ticketDAO.getTicket("ABCDEF").getId();
+        when(inputReaderUtil.readSelection()).thenReturn(1);
+
+        when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
+
+
+        Date date = new Date();
+
+        when(dateForParkingApp.getDateForParkingApp()).thenReturn(date);
+        ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO, dateForParkingApp);
+        //WHEN - ACT
+        parkingService.processIncomingVehicle();
+
+        //TODO: check that a ticket is actually saved in DB and Parking table is updated with availability
+
+        //Ticket ticket;
+        int id2 = ticketDAO.getTicket(inputReaderUtil.readVehicleRegistrationNumber()).getId();
+
+        assertFalse(id2 ==id);
+        assertTrue(id2 == 2);
+        //int id = ticket.getId();//DNAS LA DB TICKET je vais chch mon ticket
+        //THEN - ASSERT
+
+    }
+    //changer les datetIME POUR ne pas les avoir en dur
+// erreur au départ :
+    //faire le process entrée sortie une premiere fois/ récupérer id du ticket/ faire une deuxième entrée avec le même numéro d'immatriculation/
+    //récupérer id du ticket // faire la sortie //vérifier que le ticket 2 n'a pas une date de sortie nulle.
+    //
 
 }
