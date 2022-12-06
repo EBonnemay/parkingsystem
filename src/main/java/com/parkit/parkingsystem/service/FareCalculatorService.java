@@ -20,9 +20,6 @@ public class FareCalculatorService {
 
         long durationJava = outHourMillis - inHourMillis;
 
-
-
-
         //TODO: Some tests are failing here. Need to check if this logic is correct
 
         if (durationJava < 1800000) {
